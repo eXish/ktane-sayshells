@@ -65,58 +65,88 @@ public class SayShellsScript : MonoBehaviour {
     void Start()
     {
         StartDictationEngine();
-        int choice1 = UnityEngine.Random.Range(0, 4);
-        int choice2 = UnityEngine.Random.Range(0, 4);
-        int choice3 = UnityEngine.Random.Range(0, 4);
-        stage1Phrase += starters[choice1] + " ";
-        stage1Phrase += starters[choice2] + " on the ";
-        stage1Phrase += finishers[choice3];
-        Debug.LogFormat("[Say Shells #{0}] Stage 1 phrase: \"{1}\"", moduleId, stage1Phrase);
-        string letterSeq = seaShellsTable[choice1, choice2];
-        for (int i = 0; i < letterSeq.Length; i++)
+        if (!errorMode)
         {
-            stage1Sequence += seaShellsTable2[choice3, letterSeq[i] - 'A'];
-            if (i != letterSeq.Length - 1)
-                stage1Sequence += " ";
+            GenerateStage(1, true);
+            GenerateStage(2, true);
+            GenerateStage(3, true);
         }
-        Debug.LogFormat("[Say Shells #{0}] Expected sequence of words for stage 1: \"{1}\"", moduleId, stage1Sequence);
-        choice1 = UnityEngine.Random.Range(0, 4);
-        choice2 = UnityEngine.Random.Range(0, 4);
-        choice3 = UnityEngine.Random.Range(0, 11);
-        stage2Phrase += starters[choice1] + " ";
-        stage2Phrase += starters[choice2] + " on the ";
-        stage2Phrase += finishers[choice3];
-        Debug.LogFormat("[Say Shells #{0}] Stage 2 phrase: \"{1}\"", moduleId, stage2Phrase);
-        for (int i = 0; i < stage2Words.Length; i++)
+    }
+
+    void GenerateStage(int stage, bool firstGen)
+    {
+        if (stage == 1)
         {
-            string word = moneyGameLyrics[choice3].PickRandom();
-            while (stage2Words.Contains(word))
-                word = moneyGameLyrics[choice3].PickRandom();
-            stage2Words[i] = word;
-        }
-        Debug.LogFormat("[Say Shells #{0}] Stage 2 words: \"{1}\"", moduleId, stage2Words.Join("\", \""));
-        string numberSeq = moneyGameTable[choice1, choice2];
-        for (int i = 0; i < numberSeq.Length; i++)
-        {
-            int ct = 0;
-            for (int j = 0; j < moneyGameLyrics[choice3].Count; j++)
+            int choice1 = UnityEngine.Random.Range(0, 4);
+            int choice2 = UnityEngine.Random.Range(0, 4);
+            int choice3 = UnityEngine.Random.Range(0, 4);
+            if (!firstGen)
             {
-                if (stage2Words.Contains(moneyGameLyrics[choice3][j]))
-                    ct++;
-                if (ct == int.Parse(numberSeq[i].ToString()))
-                {
-                    stage2Sequence += moneyGameLyrics[choice3][j];
-                    break;
-                }
+                stage1Phrase = "";
+                stage1Sequence = "";
             }
-            if (i != numberSeq.Length - 1)
-                stage2Sequence += " ";
+            stage1Phrase += starters[choice1] + " ";
+            stage1Phrase += starters[choice2] + " on the ";
+            stage1Phrase += finishers[choice3];
+            Debug.LogFormat("[Say Shells #{0}] {2} 1 phrase: \"{1}\"", moduleId, stage1Phrase, firstGen ? "Stage" : "New stage");
+            string letterSeq = seaShellsTable[choice1, choice2];
+            for (int i = 0; i < letterSeq.Length; i++)
+            {
+                stage1Sequence += seaShellsTable2[choice3, letterSeq[i] - 'A'];
+                if (i != letterSeq.Length - 1)
+                    stage1Sequence += " ";
+            }
+            Debug.LogFormat("[Say Shells #{0}] {2} sequence of words for stage 1: \"{1}\"", moduleId, stage1Sequence, firstGen ? "Expected" : "New expected");
         }
-        Debug.LogFormat("[Say Shells #{0}] Expected sequence of words for stage 2: \"{1}\"", moduleId, stage2Sequence);
-        stage3Phrase += starters.PickRandom() + " ";
-        stage3Phrase += starters.PickRandom() + " on the ";
-        stage3Phrase += finishers.PickRandom();
-        Debug.LogFormat("[Say Shells #{0}] Stage 3 phrase: \"{1}\"", moduleId, stage3Phrase);
+        else if (stage == 2)
+        {
+            int choice1 = UnityEngine.Random.Range(0, 4);
+            int choice2 = UnityEngine.Random.Range(0, 4);
+            int choice3 = UnityEngine.Random.Range(0, 11);
+            if (!firstGen)
+            {
+                stage2Phrase = "";
+                stage2Sequence = "";
+                stage2Words = new string[5];
+            }
+            stage2Phrase += starters[choice1] + " ";
+            stage2Phrase += starters[choice2] + " on the ";
+            stage2Phrase += finishers[choice3];
+            Debug.LogFormat("[Say Shells #{0}] {2} 2 phrase: \"{1}\"", moduleId, stage2Phrase, firstGen ? "Stage" : "New stage");
+            for (int i = 0; i < stage2Words.Length; i++)
+            {
+                string word = moneyGameLyrics[choice3].PickRandom();
+                while (stage2Words.Contains(word))
+                    word = moneyGameLyrics[choice3].PickRandom();
+                stage2Words[i] = word;
+            }
+            Debug.LogFormat("[Say Shells #{0}] {2} 2 words: \"{1}\"", moduleId, stage2Words.Join("\", \""), firstGen ? "Stage" : "New stage");
+            string numberSeq = moneyGameTable[choice1, choice2];
+            for (int i = 0; i < numberSeq.Length; i++)
+            {
+                int ct = 0;
+                for (int j = 0; j < moneyGameLyrics[choice3].Count; j++)
+                {
+                    if (stage2Words.Contains(moneyGameLyrics[choice3][j]))
+                        ct++;
+                    if (ct == int.Parse(numberSeq[i].ToString()))
+                    {
+                        stage2Sequence += moneyGameLyrics[choice3][j];
+                        break;
+                    }
+                }
+                if (i != numberSeq.Length - 1)
+                    stage2Sequence += " ";
+            }
+            Debug.LogFormat("[Say Shells #{0}] {2} sequence of words for stage 2: \"{1}\"", moduleId, stage2Sequence, firstGen ? "Expected" : "New expected");
+        }
+        else
+        {
+            stage3Phrase += starters.PickRandom() + " ";
+            stage3Phrase += starters.PickRandom() + " on the ";
+            stage3Phrase += finishers.PickRandom();
+            Debug.LogFormat("[Say Shells #{0}] {2} 3 phrase: \"{1}\"", moduleId, stage3Phrase, firstGen ? "Stage" : "New stage");
+        }
     }
 
     void OnDestroy()
@@ -142,12 +172,7 @@ public class SayShellsScript : MonoBehaviour {
             {
                 curState = index;
                 if (stage3Phrase == "")
-                {
-                    stage3Phrase += starters.PickRandom() + " ";
-                    stage3Phrase += starters.PickRandom() + " on the ";
-                    stage3Phrase += finishers.PickRandom();
-                    Debug.LogFormat("[Say Shells #{0}] New stage 3 phrase: \"{1}\"", moduleId, stage3Phrase);
-                }
+                    GenerateStage(3, false);
                 if (stagesCompleted[2])
                     display.color = textColors[1];
                 else
@@ -185,6 +210,7 @@ public class SayShellsScript : MonoBehaviour {
                     {
                         GetComponent<KMBombModule>().HandleStrike();
                         Debug.LogFormat("[Say Shells #{0}] Not good enough, try again", moduleId);
+                        GenerateStage(1, false);
                     }
                     else
                     {
@@ -194,6 +220,7 @@ public class SayShellsScript : MonoBehaviour {
                             {
                                 GetComponent<KMBombModule>().HandleStrike();
                                 Debug.LogFormat("[Say Shells #{0}] Not good enough, try again", moduleId);
+                                GenerateStage(1, false);
                                 return;
                             }
                         }
@@ -242,6 +269,7 @@ public class SayShellsScript : MonoBehaviour {
                     {
                         GetComponent<KMBombModule>().HandleStrike();
                         Debug.LogFormat("[Say Shells #{0}] Not good enough, try again", moduleId);
+                        GenerateStage(2, false);
                     }
                     else
                     {
@@ -251,6 +279,7 @@ public class SayShellsScript : MonoBehaviour {
                             {
                                 GetComponent<KMBombModule>().HandleStrike();
                                 Debug.LogFormat("[Say Shells #{0}] Not good enough, try again", moduleId);
+                                GenerateStage(2, false);
                                 return;
                             }
                         }
@@ -290,10 +319,9 @@ public class SayShellsScript : MonoBehaviour {
             dictationRecognizer.DictationComplete += DictationRecognizer_OnDictationComplete;
             dictationRecognizer.DictationError += DictationRecognizer_OnDictationError;
             dictationRecognizer.Start();
-        } catch
+        } catch (Exception e)
         {
-            errorMode = true;
-            Debug.LogFormat("[Say Shells #{0}] Failed to get the defuser's microphone, press any button to solve", moduleId);
+            DictationRecognizer_OnDictationError(e.Message, -1);
         }
     }
 
@@ -416,7 +444,7 @@ public class SayShellsScript : MonoBehaviour {
     void DictationRecognizer_OnDictationError(string error, int hresult)
     {
         errorMode = true;
-        Debug.LogFormat("<Say Shells #{0}> Error: {1}", moduleId, error);
+        Debug.LogFormat("<Say Shells #{0}> {1}", moduleId, error);
         Debug.LogFormat("[Say Shells #{0}] An error occurred, press any button to solve", moduleId);
     }
 
