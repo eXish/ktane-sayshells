@@ -18,6 +18,10 @@ MonoBehaviour:
     stage as well as a phrase.
 
 
+    If you are having trouble getting the module to work go to Settings > Privacy
+    & security > Speech and enable Online speech recognition.
+
+
     HTML: https://ktane.timwi.de/HTML/Say%20Shells.html
 
     PDF: https://ktane.timwi.de/PDF/Say%20Shells.pdf
