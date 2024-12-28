@@ -64,7 +64,8 @@ public class SayShellsScript : MonoBehaviour {
 
     void Start()
     {
-        StartDictationEngine();
+        if (!TwitchPlaysActive)
+            StartDictationEngine();
         if (!errorMode)
         {
             GenerateStage(1, true);
@@ -449,6 +450,7 @@ public class SayShellsScript : MonoBehaviour {
     }
 
     //twitch plays
+    bool TwitchPlaysActive;
     #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"!{0} press TL/TR/ML/MR/B [Presses the button in the specified position] | !{0} cycle [Highlights each button briefly] | !{0} say JUST OIL JUST JUST OIL [Say something]";
     #pragma warning restore 414
