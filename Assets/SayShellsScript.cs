@@ -36,6 +36,7 @@ public class SayShellsScript : MonoBehaviour {
     };
     bool[] stagesCompleted = new bool[3];
     bool errorMode;
+    bool activated;
     string stage1Phrase = "";
     string stage2Phrase = "";
     string stage3Phrase = "";
@@ -60,9 +61,10 @@ public class SayShellsScript : MonoBehaviour {
             button.OnHighlight += delegate () { HighlightButton(button); };
             button.OnHighlightEnded += delegate () { if (curState == 2) display.text = stage2Phrase; };
         }
+        GetComponent<KMBombModule>().OnActivate += Activate;
     }
 
-    void Start()
+    void Activate()
     {
         if (!TwitchPlaysActive)
             StartDictationEngine();
@@ -72,6 +74,7 @@ public class SayShellsScript : MonoBehaviour {
             GenerateStage(2, true);
             GenerateStage(3, true);
         }
+        activated = true;
     }
 
     void GenerateStage(int stage, bool firstGen)
@@ -157,7 +160,7 @@ public class SayShellsScript : MonoBehaviour {
 
     void PressButton(KMSelectable pressed)
     {
-        if (moduleSolved != true)
+        if (moduleSolved != true && activated != false)
         {
             pressed.AddInteractionPunch();
             audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, pressed.transform);
@@ -502,6 +505,7 @@ public class SayShellsScript : MonoBehaviour {
 
     IEnumerator TwitchHandleForcedSolve()
     {
+        while (!activated) yield return true;
         if (errorMode)
         {
             buttons[0].OnInteract();
